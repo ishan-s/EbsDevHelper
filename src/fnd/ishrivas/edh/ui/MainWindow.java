@@ -17,11 +17,15 @@ import java.awt.GridLayout;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 
+import java.awt.AWTException;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 
 import com.jgoodies.forms.factories.FormFactory;
 
@@ -30,10 +34,13 @@ import fnd.ishrivas.edh.common.JTextAreaOutputStream;
 import fnd.ishrivas.edh.main.EBizInstance122x;
 import fnd.ishrivas.edh.main.SSHController;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import net.neoremind.sshxcute.core.Result;
 import net.neoremind.sshxcute.exception.TaskExecFailException;
@@ -41,6 +48,12 @@ import net.neoremind.sshxcute.exception.TaskExecFailException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+
+
+
+
+import java.net.URL;
 
 import javax.swing.BoxLayout;
 
@@ -80,6 +93,21 @@ public class MainWindow {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+        } catch (UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        } catch (InstantiationException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        /* Turn off metal's use of bold fonts */
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+   
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -99,12 +127,33 @@ public class MainWindow {
 	public MainWindow() {
 		initialize();
 	}
+	
+	//Obtain the image URL
+    protected static Image createImage(String path, String description) {
+  
+		URL imageURL = MainWindow.class.getResource(path);
+         
+        if (imageURL == null) {
+            System.err.println("Resource not found: " + path);
+            return null;
+        } else {
+            return (new ImageIcon(imageURL, description)).getImage();
+        }
+    }
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-
+		
+		final TrayIcon trayIcon = new TrayIcon(createImage("\\resources\\icon.gif", "tray_icon"));
+		final SystemTray tray = SystemTray.getSystemTray();
+		
+		try{
+			tray.add(trayIcon);
+		}catch(AWTException a){
+			a.printStackTrace();
+		}
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 600, 600);
@@ -139,6 +188,8 @@ public class MainWindow {
 						FormFactory.DEFAULT_ROWSPEC,
 						RowSpec.decode("22px"),
 						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
 						RowSpec.decode("22px"),
 						FormFactory.RELATED_GAP_ROWSPEC,
 						RowSpec.decode("22px"),
@@ -163,59 +214,59 @@ public class MainWindow {
 				panelCreds.add(lblEbsInstanceDetails, "1, 2, 9, 1, center, default");
 				
 				JLabel lblHost = new JLabel("Host");
-				panelCreds.add(lblHost, "3, 4, right, fill");
+				panelCreds.add(lblHost, "3, 6, right, fill");
 				
 				txtHost = new JTextField();
-				panelCreds.add(txtHost, "5, 4, fill, default");
+				panelCreds.add(txtHost, "5, 6, fill, default");
 				txtHost.setColumns(10);
 				
 				JLabel lblMiddleTierUsername = new JLabel("Middle Tier: Username");
-				panelCreds.add(lblMiddleTierUsername, "3, 6, right, fill");
+				panelCreds.add(lblMiddleTierUsername, "3, 8, right, fill");
 				
 				txtMtusername = new JTextField();
-				panelCreds.add(txtMtusername, "5, 6, fill, default");
+				panelCreds.add(txtMtusername, "5, 8, fill, default");
 				txtMtusername.setColumns(10);
 				
 				JLabel lblMiddleTierPassword = new JLabel("Middle Tier: Password");
-				panelCreds.add(lblMiddleTierPassword, "3, 8, right, fill");
+				panelCreds.add(lblMiddleTierPassword, "3, 10, right, fill");
 				
 				txtMtpassword = new JTextField();
-				panelCreds.add(txtMtpassword, "5, 8, fill, default");
+				panelCreds.add(txtMtpassword, "5, 10, fill, default");
 				txtMtpassword.setColumns(10);
 				
 				JLabel lblAppsUser = new JLabel("Apps: User");
-				panelCreds.add(lblAppsUser, "3, 10, right, default");
+				panelCreds.add(lblAppsUser, "3, 12, right, default");
 				
 				txtAppsuser = new JTextField();
-				panelCreds.add(txtAppsuser, "5, 10, fill, default");
+				panelCreds.add(txtAppsuser, "5, 12, fill, default");
 				txtAppsuser.setColumns(10);
 				
 				JLabel lblAppsPassword = new JLabel("Apps: Password");
-				panelCreds.add(lblAppsPassword, "3, 12, right, default");
+				panelCreds.add(lblAppsPassword, "3, 14, right, default");
 				
 				txtAppspassword = new JTextField();
-				panelCreds.add(txtAppspassword, "5, 12, fill, default");
+				panelCreds.add(txtAppspassword, "5, 14, fill, default");
 				txtAppspassword.setColumns(10);
 				
 				JLabel lblWeblogicAdminUser = new JLabel("Weblogic: Admin User");
-				panelCreds.add(lblWeblogicAdminUser, "3, 14, right, default");
+				panelCreds.add(lblWeblogicAdminUser, "3, 16, right, default");
 				
 				txtWeblogicadminuser = new JTextField();
-				panelCreds.add(txtWeblogicadminuser, "5, 14, fill, default");
+				panelCreds.add(txtWeblogicadminuser, "5, 16, fill, default");
 				txtWeblogicadminuser.setColumns(10);
 				
 				JLabel lblWeblogicAdminUser_1 = new JLabel("Weblogic: Admin User Password");
-				panelCreds.add(lblWeblogicAdminUser_1, "3, 16, right, default");
+				panelCreds.add(lblWeblogicAdminUser_1, "3, 18, right, default");
 				
 				txtWeblogicadminpassword = new JTextField();
-				panelCreds.add(txtWeblogicadminpassword, "5, 16, fill, default");
+				panelCreds.add(txtWeblogicadminpassword, "5, 18, fill, default");
 				txtWeblogicadminpassword.setColumns(10);
 				
 				JLabel lblTwoTask = new JLabel("Two Task");
-				panelCreds.add(lblTwoTask, "3, 18, right, default");
+				panelCreds.add(lblTwoTask, "3, 20, right, default");
 				
 				txtTwotask = new JTextField();
-				panelCreds.add(txtTwotask, "5, 18, fill, default");
+				panelCreds.add(txtTwotask, "5, 20, fill, default");
 				txtTwotask.setColumns(10);
 				
 				
@@ -241,13 +292,15 @@ public class MainWindow {
 						btnBounceManagedServer.setEnabled(isConnected);
 						btnConnect.setEnabled(!isConnected);
 						btnDisconnect.setEnabled(isConnected);
+						
+						trayIcon.displayMessage("Connected!", "Connection established successfully to "+ebs.host , TrayIcon.MessageType.INFO);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
 					
 					}
 				});
-				panelCreds.add(btnConnect, "3, 20, 2, 2, fill, fill");
+				panelCreds.add(btnConnect, "3, 22, 2, 2, fill, fill");
 				frame.getRootPane().setDefaultButton(btnConnect);
 				
 				btnDisconnect = new JButton("Disconnect");
@@ -261,7 +314,7 @@ public class MainWindow {
 					}
 				});
 				btnDisconnect.setEnabled(isConnected);
-				panelCreds.add(btnDisconnect, "5, 20, 1, 2, fill, fill");
+				panelCreds.add(btnDisconnect, "5, 22, 1, 2, fill, fill");
 		
 		separator_1 = new JSeparator();
 		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
@@ -301,6 +354,7 @@ public class MainWindow {
 				try {
 					res = SSHController.startBounce(Const.SCRIPT_TYPE_BOUNCE_ALL);
 					//txtPaneResult.setText(res.sysout);
+					trayIcon.displayMessage("Bounce Completed!", "Successfully bounced all servers." , TrayIcon.MessageType.INFO);
 				} catch (TaskExecFailException e1) {
 					e1.printStackTrace();
 				}
@@ -320,6 +374,7 @@ public class MainWindow {
 
 				try{
 					res = SSHController.startBounceManagedServer(txtManagedServerName.getText());
+					trayIcon.displayMessage("Bounce Completed!", "Successfully bounced "+txtManagedServerName.getText()+" managed server.", TrayIcon.MessageType.INFO);
 				} catch(TaskExecFailException e2){
 					e2.printStackTrace();
 				}
@@ -376,7 +431,7 @@ public class MainWindow {
 		
 		
 		out = new JTextAreaOutputStream(txtrStatus);
-		//System.setOut(new PrintStream(out));
+		System.setOut(new PrintStream(out));
 
 
 		
